@@ -18,9 +18,6 @@ int pomodoroPinBlinkTime = 500;
 // pin that controls the buzzer
 int buzzPin = 12;
 
-// temp var - may want to customize per tune
-int tuneDuration = 100;
-
 // pomodoro complete tune
 int pomodoroTune[] = {2637, 2637, 0, 2637, 0, 2093, 2637, 0, 3136, 0, 0, 0, 1568};
 int pomodoroTuneLength = 13;
@@ -30,6 +27,9 @@ int pomodoroTuneTempo = 12;
 int breakTune[] = {262, 523, 220, 440, 233, 466};
 int breakTuneLength = 6;
 int breakTuneTempo = 12;
+
+// acknowledge button pin
+int ackButton = 13;
 
 // sets up pins that are defined above
 void setup()
@@ -41,6 +41,7 @@ void setup()
   }
   pinMode(breakPin, OUTPUT);
   pinMode(buzzPin, OUTPUT);
+  pinMode(ackButton, INPUT);
 }
 
 // loops through pomodoro progression and updates LEDs
@@ -54,17 +55,17 @@ void loop()
     digitalWrite(pomodoroPins[index], HIGH);
   }
 
+  // play tune at end of pomodoro, then wait for acknowledgement
   playTune(pomodoroTune, pomodoroTuneLength, pomodoroTuneTempo);
-
-  // todo wait for acknowledgement
+  while(digitalRead(ackButton) != LOW) {}
 
   // break time
   blinkLight(breakPin, pomodoroPinBlinkTime, pomodoroPinDelayTime);
   digitalWrite(breakPin, HIGH);
 
+  // play tune at end of break, then wait for acknowledgement
   playTune(breakTune, breakTuneLength, breakTuneTempo);
-
-  // todo wait for acknowledgement
+  while(digitalRead(ackButton) != LOW) {}
 
   // clear everything
   digitalWrite(breakPin, LOW);
@@ -90,6 +91,7 @@ void blinkLight(int pin, int blinkLength, int totalBlinkLength) {
   }
 }
 
+// convenience function to play a little tune
 void playTune(int tune[], int length, int tempo)
 {
   int tunePosition;
