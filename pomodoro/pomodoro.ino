@@ -10,10 +10,13 @@ int breakPin = 10;
 
 // delay between each interval LED of pomodoro (in microseconds)
 // note: 5 pins * 5 mins = 25 minute total pomodoro
-int pomodoroPinDelayTime = 5000;
+int pomodoroIntervalTime = 300000;
 
 // delay between blink
-int pomodoroPinBlinkTime = 500;
+int pomodoroBlinkTime = 1000;
+
+// length of the break
+int breakTime = 300000;
 
 // pin that controls the buzzer
 int buzzPin = 12;
@@ -51,7 +54,7 @@ void loop()
   int index;
   for(index = 0; index < 5; index++)
   {
-    blinkLight(pomodoroPins[index], pomodoroPinBlinkTime, pomodoroPinDelayTime);
+    blinkLight(pomodoroPins[index], pomodoroBlinkTime, pomodoroIntervalTime);
     digitalWrite(pomodoroPins[index], HIGH);
   }
 
@@ -60,7 +63,7 @@ void loop()
   while(digitalRead(ackButton) != LOW) {}
 
   // break time
-  blinkLight(breakPin, pomodoroPinBlinkTime, pomodoroPinDelayTime);
+  blinkLight(breakPin, pomodoroBlinkTime, breakTime);
   digitalWrite(breakPin, HIGH);
 
   // play tune at end of break, then wait for acknowledgement
