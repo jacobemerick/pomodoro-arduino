@@ -8,28 +8,33 @@ int pomodoroPins[] = {3, 4, 5, 6, 7};
 // pin that controls single 'break' pin
 int breakPin = 10;
 
-// delay between each interval LED of pomodoro (in microseconds)
+// delay between each interval LED of pomodoro (in seconds)
 // note: 5 pins * 5 mins = 25 minute total pomodoro
-int pomodoroIntervalTime = 300000;
+int pomodoroIntervalTime = 300;
 
-// delay between blink
-int pomodoroBlinkTime = 1000;
+// delay between blink (in seconds)
+int pomodoroBlinkTime = 1;
 
-// length of the break
-int breakTime = 300000;
+// length of the break (in seconds)
+int breakTime = 300;
 
 // pin that controls the buzzer
 int buzzPin = 12;
 
-// pomodoro complete tune
+// pomodoro start tune
 int pomodoroTune[] = {2637, 2637, 0, 2637, 0, 2093, 2637, 0, 3136, 0, 0, 0, 1568};
 int pomodoroTuneLength = 13;
 int pomodoroTuneTempo = 12;
 
-// rest complete noise
+// pomodoro complete noise
 int breakTune[] = {262, 523, 220, 440, 233, 466};
 int breakTuneLength = 6;
 int breakTuneTempo = 12;
+
+// break complete noise
+int breakEndTune[] = {247, 349, 0, 349, 349, 330, 294, 262, 165, 0, 165, 131};
+int breakEndTuneLength = 12;
+int breakEndTuneTempo = 10;
 
 // acknowledge button pin
 int ackButton = 13;
@@ -50,6 +55,9 @@ void setup()
 // loops through pomodoro progression and updates LEDs
 void loop()
 {
+  // play intro at beginning of pomodoro
+  playTune(pomodoroTune, pomodoroTuneLength, pomodoroTuneTempo);
+
   // walk through pomodoro interval indicators
   int index;
   for(index = 0; index < 5; index++)
@@ -59,7 +67,7 @@ void loop()
   }
 
   // play tune at end of pomodoro, then wait for acknowledgement
-  playTune(pomodoroTune, pomodoroTuneLength, pomodoroTuneTempo);
+  playTune(breakTune, breakTuneLength, breakTuneTempo);
   while(digitalRead(ackButton) != LOW) {}
 
   // break time
@@ -67,7 +75,7 @@ void loop()
   digitalWrite(breakPin, HIGH);
 
   // play tune at end of break, then wait for acknowledgement
-  playTune(breakTune, breakTuneLength, breakTuneTempo);
+  playTune(breakEndTune, breakEndTuneLength, breakEndTuneTempo);
   while(digitalRead(ackButton) != LOW) {}
 
   // clear everything
@@ -88,9 +96,9 @@ void blinkLight(int pin, int blinkLength, int totalBlinkLength) {
   )
   {
     digitalWrite(pin, HIGH);
-    delay(blinkLength);
+    delay(blinkLength * 1000);
     digitalWrite(pin, LOW);
-    delay(blinkLength);
+    delay(blinkLength * 1000);
   }
 }
 
